@@ -48,24 +48,48 @@ function init() {
     .attr("d", arc(pacman))
     .style("fill", pacman.color);
 
-  d3.interval(function () {
+  function openOrCloseMouth() {
     pacman.mouthOpen = !pacman.mouthOpen;
     path.attr("d", arc(pacman));
-  }, 80);
+  }
+
+  var eat = null;
+  function startEating() {
+    if (eat !== null && eat.eating) return;
+    eat = d3.interval(openOrCloseMouth, 80);
+    eat.eating = true;
+  }
+  function stopEating() {
+    if (eat === null || !eat.eating) return;
+    eat.stop();
+    eat.eating = false;
+    pacman.mouthOpen = true;
+    path.attr("d", arc(pacman));
+  }
+  startEating();
 
   d3.interval(function() {
+    var newx, newy;
     switch (pacman.direction) {
       case LEFT:
-        pacman.x = Math.max(pacman.x - MOVE_AMOUNT, pacman.radius);
+        newx = pacman.x - MOVE_AMOUNT;
+        if (newx - pacman.radius <= 0) stopEating();
+        else pacman.x = newx;
         break;
       case UP:
-        pacman.y = Math.max(pacman.y - MOVE_AMOUNT, pacman.radius);
+        newy = pacman.y - MOVE_AMOUNT;
+        if (newy - pacman.radius <= 0) stopEating();
+        else pacman.y = newy;
         break;
       case RIGHT:
-        pacman.x = Math.min(pacman.x + MOVE_AMOUNT, screen.width - pacman.radius);
+        newx = pacman.x + MOVE_AMOUNT;
+        if (newx + pacman.radius >= screen.width) stopEating();
+        else pacman.x = newx;
         break;
       case DOWN:
-        pacman.y = Math.min(pacman.y + MOVE_AMOUNT, screen.height - pacman.radius);
+        newy = pacman.y + MOVE_AMOUNT;
+        if (newy + pacman.radius >= screen.height) stopEating();
+        else pacman.y = newy;
         break;
     }
     g.attr("transform", pacman.translate());
@@ -76,6 +100,7 @@ function init() {
       pacman.rotateAngle = keys[d3.event.keyCode];
       pacman.direction = d3.event.keyCode;
       g.attr("transform", pacman.translate());
+      startEating();
     });
 }
 
