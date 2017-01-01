@@ -8,12 +8,11 @@ function init() {
 
   var MOVE_AMOUNT = 1, PILL_SIZE = 3;
 
-  var num_pills = Math.floor(d3.randomUniform(50, 500)());
-
   var screen = {width: 224, height: 288, bgColor: "black", mouthOpen: true},
       pacman = {
-        x: 112,
-        y: 216,
+        x: screen.width / 2,
+        y: screen.height / 2 + screen.height / 4,
+        margin: 2,
         radius: 10,
         color: "yellow",
         mouthOpen: true,
@@ -24,41 +23,88 @@ function init() {
             + "rotate(" + this.rotateAngle + ")"
         }
       },
-      pills = Array.apply(0, Array(num_pills)).map(function (pill){
-        return {
-          x: d3.randomUniform(pacman.radius, screen.width - pacman.radius)(),
-          y: d3.randomUniform(pacman.radius, screen.height - pacman.radius)()
-        };
-      });
-      /*pills = [
+      pills = [
         {x: 20, y: 216},
         {x: 30, y: 216},
-        {x: 40, y: 216},
         {x: 50, y: 216},
         {x: 60, y: 216},
         {x: 70, y: 216},
         {x: 80, y: 216},
         {x: 90, y: 216}
-      ];*/
+      ],
+      lines = [
+        {x1: 2, y1: 2, x2: 112, y2: 2},
+        {x1: 7, y1: 6, x2: 112 - 4, y2: 6},
+        {x1: 112 - 4, y1: 6, x2: 112 - 4, y2: 36},
+        {x1: 112 - 4, y1: 36, x2: 112, y2: 36},
+        {x1: 2, y1: 2, x2: 2, y2: 96 + 4},
+        {x1: 7, y1: 6, x2: 7, y2: 96},
+        {x1: 7, y1: 96, x2: 40, y2: 96},
+        {x1: 2, y1: 96 + 4, x2: 36, y2: 96 + 4},
+        {x1: 40, y1: 96, x2: 40, y2: 128},
+        {x1: 36, y1: 96 + 4, x2: 36, y2: 124},
+        {x1: 2, y1: 124, x2: 36, y2: 124},
+        {x1: 2, y1: 128, x2: 40, y2: 128},
+        {x1: 2, y1: 154, x2: 40, y2: 154},
+        {x1: 2, y1: 158, x2: 36, y2: 158},
+        {x1: 40, y1: 154, x2: 40, y2: 186},
+        {x1: 36, y1: 158, x2: 36, y2: 182},
+        {x1: 2, y1: 182, x2: 36, y2: 182},
+        {x1: 2, y1: 186, x2: 40, y2: 186}
+      ],
+      num_pills = pills.length;
 
-  var svg = d3.select("body")
-    .append("svg")
-    .attr("width", screen.width)
-    .attr("height", screen.height)
-    .style("background-color", screen.bgColor);
+var piece = [        ]
 
-  var rects = svg.selectAll("rect")
-    .data(pills)
-    .enter()
-    .append("rect");
+piece.forEach(function(p){
+  p.y1 -= 42;
+  p.y2 -=42;
+});
+
+        lines = lines.concat(piece);
+
+
+  var svg, arc, g, path;
 
   var pillStyle = function (d) { return d.eaten ? "black" : "peachpuff"; };
-  var rectAttribs = rects
-    .attr("x", function (d) { return d.x; })
-    .attr("y", function (d) { return d.y; })
-    .attr("width", PILL_SIZE)
-    .attr("height", PILL_SIZE)
-    .style("fill", pillStyle);
+
+  function initSvg() {
+    svg = d3.select("body")
+      .append("svg")
+      .attr("width", screen.width)
+      .attr("height", screen.height)
+      .style("background-color", screen.bgColor);
+  }
+
+  function bindKeyDownEvent() {
+    d3.select("body")
+      .on("keydown", function() {
+        if (d3.event.keyCode === SPACE) {
+          stopMoving();
+          return;
+        }
+        var rotateAngle = keys[d3.event.keyCode];
+        if (rotateAngle === undefined) return;
+        pacman.rotateAngle = keys[d3.event.keyCode];
+        pacman.direction = d3.event.keyCode;
+        positionPacman();
+        startMoving();
+      });
+  }
+
+  function drawPills(){
+    var rects = svg.selectAll("rect")
+      .data(pills)
+      .enter()
+      .append("rect");
+
+    var rectAttribs = rects
+      .attr("x", function (d) { return d.x; })
+      .attr("y", function (d) { return d.y; })
+      .attr("width", PILL_SIZE)
+      .attr("height", PILL_SIZE)
+      .style("fill", pillStyle);
+  }
 
   function updatePills (index) {
     svg.selectAll("rect")
@@ -83,38 +129,60 @@ function init() {
     }
   }
 
-  var arc = d3.arc()
-    .innerRadius(0)
-    .outerRadius(function (p) { return p.radius; })
-    .startAngle(function (p) {
-      if (p.mouthOpen) return Math.PI / 4;
-      else return 0;
-    })
-    .endAngle(function (p) {
-      if (p.mouthOpen) return 7 * Math.PI / 4;
-      else return 2 * Math.PI;
-    });
+  function drawBorders(){
+    var borders = svg.selectAll("line")
+      .data(lines)
+      .enter()
+      .append("line");
 
-  var g = svg.append("g")
-    .attr("transform", pacman.translate());
+    var lineAttribs = borders
+      .attr("x1", function (d) { return d.x1; })
+      .attr("y1", function (d) { return d.y1; })
+      .attr("x2", function (d) { return d.x2; })
+      .attr("y2", function (d) { return d.y2; })
+      .attr("stroke-width", 2)
+      .attr("stroke", "blue");
+  }
 
-  var path = g.append("path")
-    .attr("d", arc(pacman))
-    .style("fill", pacman.color);
+  function drawPacman() {
+    arc = d3.arc()
+      .innerRadius(0)
+      .outerRadius(function (p) { return p.radius; })
+      .startAngle(function (p) {
+        if (p.mouthOpen) return Math.PI / 4;
+        else return 0;
+      })
+      .endAngle(function (p) {
+        if (p.mouthOpen) return 7 * Math.PI / 4;
+        else return 2 * Math.PI;
+      });
 
-  function openOrCloseMouth() {
-    pacman.mouthOpen = !pacman.mouthOpen;
+    g = svg.append("g");
+    path = g.append("path")
+      .attr("d", arc(pacman))
+      .style("fill", pacman.color);
+  }
+
+  function positionPacman() {
+    g.attr("transform", pacman.translate());
+  }
+
+  function drawPacmanMouth() {
     path.attr("d", arc(pacman));
   }
 
   var eat = null, move = null;
   function startMoving() {
-    if (eat === null) eat = d3.interval(openOrCloseMouth, 80);
+    if (eat === null) eat = d3.interval(function() {
+      pacman.mouthOpen = !pacman.mouthOpen;
+      drawPacmanMouth();
+    }, 80);
     if (move === null) move = d3.interval(function() {
       movePacman();
       eatPills();
     }, 20);
   }
+
   function stopMoving() {
     if (eat !== null) {
       eat.stop();
@@ -126,35 +194,48 @@ function init() {
     }
 
     pacman.mouthOpen = true;
-    path.attr("d", arc(pacman));
+    drawPacmanMouth();
   }
-  startMoving();
+
+  function crossedBoundary(newx, newy) {
+    var crossedLine = lines.some(function(line){
+      return collision(line, {x: newx, y: newy, radius: pacman.radius + pacman.margin});
+    });
+
+    return crossedLine;
+  }
 
   function movePacman() {
-    var newx, newy;
+    var newx = pacman.x, newy = pacman.y;
     switch (pacman.direction) {
       case LEFT:
         newx = pacman.x - MOVE_AMOUNT;
-        if (newx - pacman.radius <= 0) stopMoving()
-        else pacman.x = newx;
         break;
       case UP:
         newy = pacman.y - MOVE_AMOUNT;
-        if (newy - pacman.radius <= 0) stopMoving();
-        else pacman.y = newy;
         break;
       case RIGHT:
         newx = pacman.x + MOVE_AMOUNT;
-        if (newx + pacman.radius >= screen.width) stopMoving();
-        else pacman.x = newx;
         break;
       case DOWN:
         newy = pacman.y + MOVE_AMOUNT;
-        if (newy + pacman.radius >= screen.height) stopMoving();
-        else pacman.y = newy;
         break;
     }
-    g.attr("transform", pacman.translate());
+
+    // reappear on the opposite side
+    newx = newx + pacman.radius <= 0 ? screen.width + pacman.radius :
+      newx - pacman.radius >= screen.width ? -pacman.radius : newx;
+    newy = newy + pacman.radius <= 0 ? screen.height + pacman.radius :
+      newy - pacman.radius >= screen.height ? -pacman.radius : newy;
+
+    if (crossedBoundary(newx, newy)){
+      stopMoving();
+      return;
+    }
+
+    pacman.x = newx;
+    pacman.y = newy;
+    positionPacman();
   }
 
   function eatPills() {
@@ -167,17 +248,13 @@ function init() {
     });
   }
 
-  d3.select("body")
-    .on("keydown", function() {
-      if (d3.event.keyCode === SPACE) {
-        stopMoving();
-        return;
-      }
-      pacman.rotateAngle = keys[d3.event.keyCode];
-      pacman.direction = d3.event.keyCode;
-      g.attr("transform", pacman.translate());
-      startMoving();
-    });
+  initSvg();
+  drawPills();
+  drawBorders();
+  drawPacman();
+  positionPacman();
+  startMoving();
+  bindKeyDownEvent();
 }
 
 ready(init);
