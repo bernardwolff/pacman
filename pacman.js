@@ -30,6 +30,16 @@ function init() {
           y: d3.randomUniform(pacman.radius, screen.height - pacman.radius)()
         };
       });
+      /*pills = [
+        {x: 20, y: 216},
+        {x: 30, y: 216},
+        {x: 40, y: 216},
+        {x: 50, y: 216},
+        {x: 60, y: 216},
+        {x: 70, y: 216},
+        {x: 80, y: 216},
+        {x: 90, y: 216}
+      ];*/
 
   var svg = d3.select("body")
     .append("svg")
@@ -150,34 +160,9 @@ function init() {
   function eatPills() {
     pills.forEach(function(pill) {
       if (pill.eaten) return;
-      switch (pacman.direction) {
-        case LEFT:
-          if (pill.x >= pacman.x && pill.x <= pacman.x + pacman.radius &&
-              pill.y >= pacman.y - pacman.radius && pill.y <= pacman.y + pacman.radius) {
-            eatPill(pill);
-          }
-          break;
-        case UP:
-          if (pill.x >= pacman.x - pacman.radius && pill.x <= pacman.x + pacman.radius &&
-              pill.y >= pacman.y && pill.y <= pacman.y + pacman.radius) {
-            pill.eaten = true;
-            eatPill(pill);
-          }
-          break;
-        case RIGHT:
-          if (pill.x <= pacman.x && pill.x >= pacman.x - pacman.radius &&
-              pill.y >= pacman.y - pacman.radius && pill.y <= pacman.y + pacman.radius) {
-            pill.eaten = true;
-            eatPill(pill);
-          }
-          break;
-        case DOWN:
-          if (pill.x >= pacman.x - pacman.radius && pill.x <= pacman.x + pacman.radius &&
-              pill.y <= pacman.y && pill.y >= pacman.y - pacman.radius) {
-            pill.eaten = true;
-            eatPill(pill);
-          }
-          break;
+      if (pill.x >= pacman.x - pacman.radius && pill.x <= pacman.x + pacman.radius &&
+          pill.y >= pacman.y - pacman.radius && pill.y <= pacman.y + pacman.radius) {
+        eatPill(pill);
       }
     });
   }
