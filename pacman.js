@@ -39,22 +39,25 @@ function init() {
         {x1: 7, y1: 6, x2: 112 - 4, y2: 6},
         {x1: 112 - 4, y1: 6, x2: 112 - 4, y2: 36},
         {x1: 112 - 4, y1: 36, x2: 112, y2: 36},
-        {x1: 2, y1: 2, x2: 2, y2: 96 + 4},
-        {x1: 7, y1: 6, x2: 7, y2: 96},
-        {x1: 7, y1: 96, x2: 40, y2: 96},
-        {x1: 2, y1: 96 + 4, x2: 36, y2: 96 + 4},
-        {x1: 40, y1: 96, x2: 40, y2: 128},
-        {x1: 36, y1: 96 + 4, x2: 36, y2: 124},
-        {x1: 2, y1: 124, x2: 36, y2: 124},
-        {x1: 2, y1: 128, x2: 40, y2: 128},
-        {x1: 2, y1: 154, x2: 40, y2: 154},
-        {x1: 2, y1: 158, x2: 36, y2: 158},
-        {x1: 40, y1: 154, x2: 40, y2: 186},
-        {x1: 36, y1: 158, x2: 36, y2: 182},
-        {x1: 2, y1: 182, x2: 36, y2: 182},
-        {x1: 2, y1: 186, x2: 40, y2: 186}
+        {x1: 2, y1: 2, x2: 2, y2: 90},
+        {x1: 7, y1: 6, x2: 7, y2: 86},
+        {x1: 7, y1: 86, x2: 40, y2: 86},
+        {x1: 2, y1: 86 + 4, x2: 36, y2: 90},
+        {x1: 40, y1: 86, x2: 40, y2: 118},
+        {x1: 36, y1: 86 + 4, x2: 36, y2: 114},
+        {x1: 2, y1: 114, x2: 36, y2: 114},
+        {x1: 2, y1: 118, x2: 40, y2: 118},
+        {x1: 2, y1: 144, x2: 40, y2: 144},
+        {x1: 2, y1: 148, x2: 36, y2: 148},
+        {x1: 40, y1: 144, x2: 40, y2: 176},
+        {x1: 36, y1: 148, x2: 36, y2: 172},
+        {x1: 2, y1: 172, x2: 36, y2: 172},
+        {x1: 7, y1: 176, x2: 40, y2: 176},
+        {x1: 2, y1: 172, x2: 2, y2: 232},
+        {x1: 7, y1: 176, x2: 7, y2: 232}
       ],
-      num_pills = pills.length;
+      num_pills = pills.length,
+      selected_line = -1;
 
 
   var svg, arc, g, path;
@@ -69,17 +72,84 @@ function init() {
       .style("background-color", screen.bgColor);
   }
 
+  function moveSelectedLine(dp) {
+    var line = lines[selected_line];
+    line.x1 += dp.x1;
+    line.x2 += dp.x2;
+    line.y1 += dp.y1;
+    line.y2 += dp.y2;
+    updateLines();
+  }
+
   function bindKeyDownEvent() {
     d3.select("body")
       .on("keydown", function() {
-        if (d3.event.keyCode === SPACE) {
-          stopMoving();
-          return;
+        switch (d3.event.keyCode){
+          case SPACE:
+            stopMoving();
+            return;
+          case 82: // f = move to next Frame of animation
+            movePacman();
+            return;
+          case 78: // n = select Next line
+            if (selected_line > -1) lines[selected_line].selected = false;
+            selected_line = (selected_line + 1) % lines.length;
+            lines[selected_line].selected = true;
+            updateLines();
+            return;
+          case 68: // d = Deselect selected line
+            lines.forEach(function(line){ line.selected = false; });
+            selected_line = -1;
+            updateLines();
+            return;
+          case 71: // g = Grow selected line
+            if (selected_line < 0) return;
+            var line = lines[selected_line];
+            if (line.x1 === line.x2) // vertical line
+              line.y2++;
+            if (line.y1 === line.y2) // horizontal line
+              line.x2++;
+            updateLines();
+            return;
+          case 83: // s = Shrink selected line
+            if (selected_line < 0) return;
+            var line = lines[selected_line];
+            if (line.x1 === line.x2) // vertical line
+              line.y2--;
+            if (line.y1 === line.y2) // horizontal line
+              line.x2--;
+            updateLines();
+            return;
+          case LEFT:
+            if (selected_line > -1)
+            {
+              moveSelectedLine({x1: -1, y1: 0, x2: -1, y2: 0});
+              return;
+            }
+            break;
+          case RIGHT:
+            if (selected_line > -1)
+            {
+              moveSelectedLine({x1: 1, y1: 0, x2: 1, y2: 0});
+              return;
+            }
+            break;
+          case UP:
+            if (selected_line > -1)
+            {
+              moveSelectedLine({x1: 0, y1: -1, x2: 0, y2: -1});
+              return;
+            }
+            break;
+          case DOWN:
+            if (selected_line > -1)
+            {
+              moveSelectedLine({x1: 0, y1: 1, x2: 0, y2: 1});
+              return;
+            }
+            break;
         }
-        if (d3.event.keyCode === 82) { // r
-          movePacman();
-          return;
-        }
+
         var rotateAngle = keys[d3.event.keyCode];
         if (rotateAngle === undefined) return;
         pacman.desiredRotateAngle = keys[d3.event.keyCode];
@@ -103,7 +173,7 @@ function init() {
       .style("fill", pillStyle);
   }
 
-  function updatePills (index) {
+  function updatePills () {
     svg.selectAll("rect")
         .style("fill", pillStyle);
   }
@@ -126,7 +196,9 @@ function init() {
     }
   }
 
-  function drawBorders(){
+  var lineStroke = function (d) {return d.selected ? "red" : "blue"; };
+
+  function drawLines(){
     var borders = svg.selectAll("line")
       .data(lines)
       .enter()
@@ -138,7 +210,17 @@ function init() {
       .attr("x2", function (d) { return d.x2; })
       .attr("y2", function (d) { return d.y2; })
       .attr("stroke-width", 2)
-      .attr("stroke", "blue");
+      .attr("stroke", lineStroke);
+  }
+
+  function updateLines()
+  {
+    var lines = svg.selectAll("line")
+        .attr("x1", function (d) { return d.x1; })
+        .attr("y1", function (d) { return d.y1; })
+        .attr("x2", function (d) { return d.x2; })
+        .attr("y2", function (d) { return d.y2; })
+        .attr("stroke", lineStroke);
   }
 
   function drawPacman() {
@@ -246,7 +328,10 @@ function init() {
       direction = pacman.direction;
 
       if (crossedBoundary(coords.x, coords.y)){
+
         stopMoving();
+        pacman.rotateAngle = pacman.desiredRotateAngle;
+        positionPacman();
         return;
       }
     }
@@ -261,11 +346,12 @@ function init() {
   function eatPills() {
     pills.forEach(function(pill) {
       if (pill.eaten) return;
+      // here we are using margin to do collision detection with a smaller rect
       if (collision_point_rect(pill, {
-        x1: pacman.x - pacman.radius - pacman.margin,
-        x2: pacman.x + pacman.radius + pacman.margin,
-        y1: pacman.y - pacman.radius - pacman.margin,
-        y2: pacman.y + pacman.radius + pacman.margin
+        x1: pacman.x - pacman.radius + pacman.margin,
+        x2: pacman.x + pacman.radius - pacman.margin,
+        y1: pacman.y - pacman.radius + pacman.margin,
+        y2: pacman.y + pacman.radius - pacman.margin
       })) {
         eatPill(pill);
       }
@@ -274,7 +360,7 @@ function init() {
 
   initSvg();
   drawPills();
-  drawBorders();
+  drawLines();
   drawPacman();
   positionPacman();
   startMoving();
