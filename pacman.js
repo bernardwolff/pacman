@@ -18,6 +18,8 @@ function init() {
         mouthOpen: true,
         direction: LEFT,
         rotateAngle: -90,
+        desiredDirection: LEFT,
+        desiredRotateAngle: -90,
         translate: function(){
           return "translate(" + this.x + "," + this.y + ")"
             + "rotate(" + this.rotateAngle + ")"
@@ -54,15 +56,6 @@ function init() {
       ],
       num_pills = pills.length;
 
-var piece = [        ]
-
-piece.forEach(function(p){
-  p.y1 -= 42;
-  p.y2 -=42;
-});
-
-        lines = lines.concat(piece);
-
 
   var svg, arc, g, path;
 
@@ -83,10 +76,14 @@ piece.forEach(function(p){
           stopMoving();
           return;
         }
+        if (d3.event.keyCode === 82) { // r
+          movePacman();
+          return;
+        }
         var rotateAngle = keys[d3.event.keyCode];
         if (rotateAngle === undefined) return;
-        pacman.rotateAngle = keys[d3.event.keyCode];
-        pacman.direction = d3.event.keyCode;
+        pacman.desiredRotateAngle = keys[d3.event.keyCode];
+        pacman.desiredDirection = d3.event.keyCode;
         positionPacman();
         startMoving();
       });
@@ -198,16 +195,23 @@ piece.forEach(function(p){
   }
 
   function crossedBoundary(newx, newy) {
+    var radius = pacman.radius + pacman.margin;
     var crossedLine = lines.some(function(line){
-      return collision(line, {x: newx, y: newy, radius: pacman.radius + pacman.margin});
+      //return collision_line_circle(line, {x: newx, y: newy, radius: pacman.radius + pacman.margin});
+      return collision_line_rect(line, {
+        x1: newx - radius,
+        x2: newx + radius,
+        y1: newy - radius,
+        y2: newy + radius
+      });
     });
 
     return crossedLine;
   }
 
-  function movePacman() {
+  function getNewCoords(direction) {
     var newx = pacman.x, newy = pacman.y;
-    switch (pacman.direction) {
+    switch (direction) {
       case LEFT:
         newx = pacman.x - MOVE_AMOUNT;
         break;
@@ -228,21 +232,41 @@ piece.forEach(function(p){
     newy = newy + pacman.radius <= 0 ? screen.height + pacman.radius :
       newy - pacman.radius >= screen.height ? -pacman.radius : newy;
 
-    if (crossedBoundary(newx, newy)){
-      stopMoving();
-      return;
+    return {x: newx, y: newy};
+  }
+
+  function movePacman() {
+    var coords = getNewCoords(pacman.desiredDirection);
+    var angle = pacman.desiredRotateAngle;
+    var direction = pacman.desiredDirection;
+
+    if (crossedBoundary(coords.x, coords.y)){
+      coords = getNewCoords(pacman.direction);
+      angle = pacman.rotateAngle;
+      direction = pacman.direction;
+
+      if (crossedBoundary(coords.x, coords.y)){
+        stopMoving();
+        return;
+      }
     }
 
-    pacman.x = newx;
-    pacman.y = newy;
+    pacman.rotateAngle = angle;
+    pacman.direction = direction;
+    pacman.x = coords.x;
+    pacman.y = coords.y;
     positionPacman();
   }
 
   function eatPills() {
     pills.forEach(function(pill) {
       if (pill.eaten) return;
-      if (pill.x >= pacman.x - pacman.radius && pill.x <= pacman.x + pacman.radius &&
-          pill.y >= pacman.y - pacman.radius && pill.y <= pacman.y + pacman.radius) {
+      if (collision_point_rect(pill, {
+        x1: pacman.x - pacman.radius - pacman.margin,
+        x2: pacman.x + pacman.radius + pacman.margin,
+        y1: pacman.y - pacman.radius - pacman.margin,
+        y2: pacman.y + pacman.radius + pacman.margin
+      })) {
         eatPill(pill);
       }
     });
