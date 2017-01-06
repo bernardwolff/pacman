@@ -27,15 +27,30 @@
 
 function collision_line_rect (line, rect)
 {
+  var rect_min = {x: Math.min(rect.x1, rect.x2), y: Math.min(rect.y1, rect.y2)};
+  var rect_max = {x: Math.max(rect.x1, rect.x2), y: Math.max(rect.y1, rect.y2)};
+  var sorted_rect = {x1: rect_min.x, y1: rect_min.y, x2: rect_max.x, y2: rect_max.y};
+
+  var sorted_line = {x1: Math.min(line.x1, line.x2), y1: Math.min(line.y1, line.y2),
+    x2: Math.max(line.x1, line.x2), y2: Math.max(line.y1, line.y2)};
+
   var collision =
     // first endpoint inside rect
-    collision_point_rect({x: line.x1, y: line.y1}, rect) ||
+    collision_point_rect({x: line.x1, y: line.y1}, sorted_rect) ||
     // second endpoint inside rect
-    collision_point_rect({x: line.x2, y: line.y2}, rect) ||
+    collision_point_rect({x: line.x2, y: line.y2}, sorted_rect) ||
      // horizontal line overlap
-    (line.y1 === line.y2 && line.x1 <= rect.x1 && line.x2 >= rect.x2 && line.y1 >= rect.y1 && line.y1 <= rect.y2) ||
+    (line.y1 === line.y2 &&
+      sorted_line.x1 <= sorted_rect.x1 && // left side of line is outside the rect
+      sorted_line.x2 >= sorted_rect.x2 && // right side of line is outside the rect
+      sorted_line.y1 >= sorted_rect.y1 && // line is below top of rect
+      sorted_line.y1 <= sorted_rect.y2) || // line is above bottom of rect
     // vertical line overlap
-    (line.x1 === line.x2 && line.y1 <= rect.y1 && line.y2 >= rect.y2 && line.x1 >= rect.x1 && line.x1 <= rect.x2);
+    (sorted_line.x1 === sorted_line.x2 &&
+      sorted_line.y1 <= sorted_rect.y1 &&
+      sorted_line.y2 >= sorted_rect.y2 &&
+      sorted_line.x1 >= sorted_rect.x1 &&
+      sorted_line.x1 <= sorted_rect.x2);
 
     return collision;
 }

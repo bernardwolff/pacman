@@ -6,14 +6,14 @@ function init() {
   keys[RIGHT] = 90;
   keys[DOWN] = 180;
 
-  var MOVE_AMOUNT = 1, PILL_SIZE = 3;
+  var MOVE_AMOUNT = 1, PILL_SIZE = 2;
 
   var screen = {width: 224, height: 288, bgColor: "black", mouthOpen: true},
       pacman = {
-        x: screen.width / 2,
-        y: screen.height / 2 + screen.height / 4,
-        margin: 2,
-        radius: 10,
+        x: 112,
+        y: 200,
+        margin: 1,
+        radius: 6,
         color: "yellow",
         mouthOpen: true,
         direction: LEFT,
@@ -34,31 +34,9 @@ function init() {
         {x: 80, y: 216},
         {x: 90, y: 216}
       ],
-      lines = [
-        {x1: 2, y1: 2, x2: 112, y2: 2},
-        {x1: 7, y1: 6, x2: 112 - 4, y2: 6},
-        {x1: 112 - 4, y1: 6, x2: 112 - 4, y2: 36},
-        {x1: 112 - 4, y1: 36, x2: 112, y2: 36},
-        {x1: 2, y1: 2, x2: 2, y2: 90},
-        {x1: 7, y1: 6, x2: 7, y2: 86},
-        {x1: 7, y1: 86, x2: 40, y2: 86},
-        {x1: 2, y1: 86 + 4, x2: 36, y2: 90},
-        {x1: 40, y1: 86, x2: 40, y2: 118},
-        {x1: 36, y1: 86 + 4, x2: 36, y2: 114},
-        {x1: 2, y1: 114, x2: 36, y2: 114},
-        {x1: 2, y1: 118, x2: 40, y2: 118},
-        {x1: 2, y1: 144, x2: 40, y2: 144},
-        {x1: 2, y1: 148, x2: 36, y2: 148},
-        {x1: 40, y1: 144, x2: 40, y2: 176},
-        {x1: 36, y1: 148, x2: 36, y2: 172},
-        {x1: 2, y1: 172, x2: 36, y2: 172},
-        {x1: 7, y1: 176, x2: 40, y2: 176},
-        {x1: 2, y1: 172, x2: 2, y2: 232},
-        {x1: 7, y1: 176, x2: 7, y2: 232}
-      ],
+      lines = [{"x1":1,"y1":25,"x2":112,"y2":25,"selected":false},{"x1":4,"y1":28,"x2":108,"y2":28,"selected":false},{"x1":108,"y1":28,"x2":108,"y2":54,"selected":false},{"x1":108,"y1":54,"x2":112,"y2":54,"selected":false},{"x1":1,"y1":25,"x2":1,"y2":104,"selected":false},{"x1":4,"y1":28,"x2":4,"y2":101,"selected":false},{"x1":4,"y1":101,"x2":39,"y2":101,"selected":false},{"x1":1,"y1":104,"x2":36,"y2":104,"selected":false},{"x1":39,"y1":101,"x2":39,"y2":132,"selected":false},{"x1":36,"y1":104,"x2":36,"y2":129,"selected":false},{"x1":1,"y1":129,"x2":36,"y2":129,"selected":false},{"x1":1,"y1":132,"x2":39,"y2":132,"selected":false},{"x1":1,"y1":149,"x2":39,"y2":149,"selected":false},{"x1":1,"y1":152,"x2":36,"y2":152,"selected":false},{"x1":39,"y1":149,"x2":39,"y2":180,"selected":false},{"x1":36,"y1":152,"x2":36,"y2":177,"selected":false},{"x1":1,"y1":177,"x2":36,"y2":177,"selected":false},{"x1":4,"y1":180,"x2":39,"y2":180,"selected":false},{"x1":4,"y1":180,"x2":4,"y2":221,"selected":false},{"x1":4,"y1":221,"x2":19,"y2":221,"selected":false},{"x1":19,"y1":221,"x2":19,"y2":228,"selected":false},{"x1":4,"y1":228,"x2":19,"y2":228,"selected":false},{"x1":4,"y1":228,"x2":4,"y2":269,"selected":false},{"x1":1,"y1":177,"x2":1,"y2":272,"selected":false},{"x1":4,"y1":269,"x2":112,"y2":269,"selected":false},{"x1":1,"y1":272,"x2":112,"y2":272,"selected":false},{"x1":223,"y1":25,"x2":112,"y2":25,"selected":false},{"x1":220,"y1":28,"x2":116,"y2":28,"selected":false},{"x1":116,"y1":28,"x2":116,"y2":54,"selected":false},{"x1":116,"y1":54,"x2":112,"y2":54,"selected":false},{"x1":223,"y1":25,"x2":223,"y2":104,"selected":false},{"x1":220,"y1":28,"x2":220,"y2":101,"selected":false},{"x1":220,"y1":101,"x2":185,"y2":101,"selected":false},{"x1":223,"y1":104,"x2":188,"y2":104,"selected":false},{"x1":185,"y1":101,"x2":185,"y2":132,"selected":false},{"x1":188,"y1":104,"x2":188,"y2":129,"selected":false},{"x1":223,"y1":129,"x2":188,"y2":129,"selected":false},{"x1":223,"y1":132,"x2":185,"y2":132,"selected":false},{"x1":223,"y1":149,"x2":185,"y2":149,"selected":false},{"x1":223,"y1":152,"x2":188,"y2":152,"selected":false},{"x1":185,"y1":149,"x2":185,"y2":180,"selected":false},{"x1":188,"y1":152,"x2":188,"y2":177,"selected":false},{"x1":223,"y1":177,"x2":188,"y2":177,"selected":false},{"x1":220,"y1":180,"x2":185,"y2":180,"selected":false},{"x1":220,"y1":180,"x2":220,"y2":221,"selected":false},{"x1":220,"y1":221,"x2":205,"y2":221,"selected":false},{"x1":205,"y1":221,"x2":205,"y2":228,"selected":false},{"x1":220,"y1":228,"x2":205,"y2":228,"selected":false},{"x1":220,"y1":228,"x2":220,"y2":269,"selected":false},{"x1":223,"y1":177,"x2":223,"y2":272,"selected":false},{"x1":220,"y1":269,"x2":112,"y2":269,"selected":false},{"x1":223,"y1":272,"x2":112,"y2":272,"selected":false}],
       num_pills = pills.length,
       selected_line = -1;
-
 
   var svg, arc, g, path;
 
@@ -88,13 +66,14 @@ function init() {
     d3.select("body")
       .on("keydown", function() {
         console.log("key pressed " + d3.event.keyCode);
-        var move = false, moved_line = false;
+        var move = false;
         switch (d3.event.keyCode){
           case SPACE:
             stopMoving();
             return;
           case 70: // f = move to next Frame of animation
             movePacman();
+            eatPills();
             return;
           case 78: // n = select Next line
             if (selected_line > -1) lines[selected_line].selected = false;
@@ -104,7 +83,23 @@ function init() {
             line.selected = true;
             updateLines();
             return;
-          case 68: // d = Deselect selected line
+          case 80: // p = select Previous line
+            if (selected_line > -1) lines[selected_line].selected = false;
+            selected_line = selected_line <= 0 ? lines.length - 1 : selected_line - 1;
+            var line = lines[selected_line];
+            console.log("selected line: " + JSON.stringify(line));
+            line.selected = true;
+            updateLines();
+            return;
+          case 68: // d = Delete selected line
+            if (selected_line < 0) return;
+            var deleted = lines.splice(selected_line, 1);
+            drawLines();
+            updateLines();
+            selected_line = -1;
+            console.log("deleted selected line: " + JSON.stringify(deleted));
+            return;
+          case 85: // u = Unselect selected line
             if (selected_line < 0) return;
             lines[selected_line].selected = false;
             selected_line = -1;
@@ -114,19 +109,21 @@ function init() {
             if (selected_line < 0) return;
             var line = lines[selected_line];
             if (line.x1 === line.x2) // vertical line
-              line.y2++;
+              if (line.y2 >= line.y1) line.y2++; else line.y1++;
             if (line.y1 === line.y2) // horizontal line
-              line.x2++;
+              if (line.x2 >= line.x1) line.x2++; else line.x1++;
             updateLines();
+            console.log("grew line: " + JSON.stringify(line));
             return;
           case 83: // s = Shrink selected line
             if (selected_line < 0) return;
             var line = lines[selected_line];
             if (line.x1 === line.x2) // vertical line
-              line.y2--;
+              if (line.y2 >= line.y1) line.y2--; else line.y1--;
             if (line.y1 === line.y2) // horizontal line
-              line.x2--;
+              if (line.x2 >= line.x1) line.x2--; else line.x1--;
             updateLines();
+            console.log("shrunk line: " + JSON.stringify(line));
             return;
           case 82: // r = Rotate selected line 180 degrees
             if (selected_line < 0) return;
@@ -137,31 +134,37 @@ function init() {
             line.x2 = rotated.x2;
             line.y2 = rotated.y2;
             updateLines();
+            console.log("rotated line: " + JSON.stringify(line));
             return;
-          case 80: // p = Place a new line on the board
+          case 65: // a = Add a new line to the board
             lines.push({"x1":68,"y1":125,"x2":150,"y2":125,"selected":true});
+            if (selected_line > -1) lines[selected_line].selected = false;
             selected_line = lines.length - 1;
             drawLines();
+            updateLines();
+            return;
+          case 76: // l = log all Lines to the console
+            console.log(JSON.stringify(lines));
             return;
           case LEFT:
             move = true;
-            moved_line = moveLine({x1: -1, y1: 0, x2: -1, y2: 0}, selected_line);
+            if (moveLine({x1: -1, y1: 0, x2: -1, y2: 0}, selected_line)) return;
             break;
           case RIGHT:
             move = true;
-            moved_line = moveLine({x1: 1, y1: 0, x2: 1, y2: 0}, selected_line);
+            if (moveLine({x1: 1, y1: 0, x2: 1, y2: 0}, selected_line)) return;
             break;
           case UP:
             move = true;
-            moved_line = moveLine({x1: 0, y1: -1, x2: 0, y2: -1}, selected_line);
+            if (moveLine({x1: 0, y1: -1, x2: 0, y2: -1}, selected_line)) return;
             break;
           case DOWN:
             move = true;
-            moved_line = moveLine({x1: 0, y1: 1, x2: 0, y2: 1}, selected_line);
+            if (moveLine({x1: 0, y1: 1, x2: 0, y2: 1}, selected_line)) return;
             break;
         }
 
-        if (!move || moved_line) return;
+        if (!move) return;
 
         var desiredRotateAngle = keys[d3.event.keyCode];
         if (desiredRotateAngle === undefined) return;
@@ -192,6 +195,7 @@ function init() {
   }
 
   function eatPill (pill) {
+    console.log("eating pill");
     pill.eaten = true;
     num_pills--;
     updatePills();
@@ -209,7 +213,8 @@ function init() {
     }
   }
 
-  function drawLines(){
+  function drawLines()
+  {
     var borders = svg.selectAll("line")
       .data(lines)
       .enter()
@@ -227,8 +232,8 @@ function init() {
       .attr("y1", function (d) { return d.y1; })
       .attr("x2", function (d) { return d.x2; })
       .attr("y2", function (d) { return d.y2; })
-      .attr("stroke-width", 2)
-      .attr("stroke", function (d) {return d.selected ? "red" : "blue"; });
+      .attr("stroke-width", 1)
+      .attr("stroke", function (d) {return d.selected ? "red" : "#2121de"; });
   }
 
   function drawPacman() {
