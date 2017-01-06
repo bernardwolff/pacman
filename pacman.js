@@ -72,33 +72,41 @@ function init() {
       .style("background-color", screen.bgColor);
   }
 
-  function moveSelectedLine(dp) {
-    var line = lines[selected_line];
+  function moveLine(dp, line_index) {
+    if (selected_line < 0) return false;
+    var line = lines[line_index];
     line.x1 += dp.x1;
     line.x2 += dp.x2;
     line.y1 += dp.y1;
     line.y2 += dp.y2;
     updateLines();
+    console.log("moved line to " + JSON.stringify(line))
+    return true;
   }
 
   function bindKeyDownEvent() {
     d3.select("body")
       .on("keydown", function() {
+        console.log("key pressed " + d3.event.keyCode);
+        var move = false, moved_line = false;
         switch (d3.event.keyCode){
           case SPACE:
             stopMoving();
             return;
-          case 82: // f = move to next Frame of animation
+          case 70: // f = move to next Frame of animation
             movePacman();
             return;
           case 78: // n = select Next line
             if (selected_line > -1) lines[selected_line].selected = false;
             selected_line = (selected_line + 1) % lines.length;
-            lines[selected_line].selected = true;
+            var line = lines[selected_line];
+            console.log("selected line: " + JSON.stringify(line));
+            line.selected = true;
             updateLines();
             return;
           case 68: // d = Deselect selected line
-            lines.forEach(function(line){ line.selected = false; });
+            if (selected_line < 0) return;
+            lines[selected_line].selected = false;
             selected_line = -1;
             updateLines();
             return;
@@ -120,39 +128,44 @@ function init() {
               line.x2--;
             updateLines();
             return;
+          case 82: // r = Rotate selected line 180 degrees
+            if (selected_line < 0) return;
+            var line = lines[selected_line];
+            var rotated = rotate_line(line, Math.PI);
+            line.x1 = rotated.x1;
+            line.y1 = rotated.y1;
+            line.x2 = rotated.x2;
+            line.y2 = rotated.y2;
+            updateLines();
+            return;
+          case 80: // p = Place a new line on the board
+            lines.push({"x1":68,"y1":125,"x2":150,"y2":125,"selected":true});
+            selected_line = lines.length - 1;
+            drawLines();
+            return;
           case LEFT:
-            if (selected_line > -1)
-            {
-              moveSelectedLine({x1: -1, y1: 0, x2: -1, y2: 0});
-              return;
-            }
+            move = true;
+            moved_line = moveLine({x1: -1, y1: 0, x2: -1, y2: 0}, selected_line);
             break;
           case RIGHT:
-            if (selected_line > -1)
-            {
-              moveSelectedLine({x1: 1, y1: 0, x2: 1, y2: 0});
-              return;
-            }
+            move = true;
+            moved_line = moveLine({x1: 1, y1: 0, x2: 1, y2: 0}, selected_line);
             break;
           case UP:
-            if (selected_line > -1)
-            {
-              moveSelectedLine({x1: 0, y1: -1, x2: 0, y2: -1});
-              return;
-            }
+            move = true;
+            moved_line = moveLine({x1: 0, y1: -1, x2: 0, y2: -1}, selected_line);
             break;
           case DOWN:
-            if (selected_line > -1)
-            {
-              moveSelectedLine({x1: 0, y1: 1, x2: 0, y2: 1});
-              return;
-            }
+            move = true;
+            moved_line = moveLine({x1: 0, y1: 1, x2: 0, y2: 1}, selected_line);
             break;
         }
 
-        var rotateAngle = keys[d3.event.keyCode];
-        if (rotateAngle === undefined) return;
-        pacman.desiredRotateAngle = keys[d3.event.keyCode];
+        if (!move || moved_line) return;
+
+        var desiredRotateAngle = keys[d3.event.keyCode];
+        if (desiredRotateAngle === undefined) return;
+        pacman.desiredRotateAngle = desiredRotateAngle;
         pacman.desiredDirection = d3.event.keyCode;
         positionPacman();
         startMoving();
@@ -196,31 +209,26 @@ function init() {
     }
   }
 
-  var lineStroke = function (d) {return d.selected ? "red" : "blue"; };
-
   function drawLines(){
     var borders = svg.selectAll("line")
       .data(lines)
       .enter()
       .append("line");
 
-    var lineAttribs = borders
+    updateLines(borders);
+  }
+
+  function updateLines(lines)
+  {
+    var toUpdate = lines ? lines : svg.selectAll("line");
+
+    var lineAttribs = toUpdate
       .attr("x1", function (d) { return d.x1; })
       .attr("y1", function (d) { return d.y1; })
       .attr("x2", function (d) { return d.x2; })
       .attr("y2", function (d) { return d.y2; })
       .attr("stroke-width", 2)
-      .attr("stroke", lineStroke);
-  }
-
-  function updateLines()
-  {
-    var lines = svg.selectAll("line")
-        .attr("x1", function (d) { return d.x1; })
-        .attr("y1", function (d) { return d.y1; })
-        .attr("x2", function (d) { return d.x2; })
-        .attr("y2", function (d) { return d.y2; })
-        .attr("stroke", lineStroke);
+      .attr("stroke", function (d) {return d.selected ? "red" : "blue"; });
   }
 
   function drawPacman() {
