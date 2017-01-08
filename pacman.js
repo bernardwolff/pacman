@@ -11,7 +11,7 @@ function init() {
   var screen = {width: 224, height: 288, bgColor: "black", mouthOpen: true},
       pacman = {
         x: 112,
-        y: 200,
+        y: 212,
         margin: 1,
         radius: 6,
         color: "yellow",
@@ -26,15 +26,10 @@ function init() {
         }
       },
       pills = [
-        {x: 20, y: 216},
-        {x: 30, y: 216},
-        {x: 50, y: 216},
-        {x: 60, y: 216},
-        {x: 70, y: 216},
-        {x: 80, y: 216},
-        {x: 90, y: 216}
+        {x: 10, y: 212},
+        {x: 18, y: 212},
+        {x: 26, y: 212},
       ],
-      lines = [{"x1":1,"y1":25,"x2":112,"y2":25,"selected":false},{"x1":4,"y1":28,"x2":108,"y2":28,"selected":false},{"x1":108,"y1":28,"x2":108,"y2":54,"selected":false},{"x1":108,"y1":54,"x2":112,"y2":54,"selected":false},{"x1":1,"y1":25,"x2":1,"y2":104,"selected":false},{"x1":4,"y1":28,"x2":4,"y2":101,"selected":false},{"x1":4,"y1":101,"x2":39,"y2":101,"selected":false},{"x1":1,"y1":104,"x2":36,"y2":104,"selected":false},{"x1":39,"y1":101,"x2":39,"y2":132,"selected":false},{"x1":36,"y1":104,"x2":36,"y2":129,"selected":false},{"x1":1,"y1":129,"x2":36,"y2":129,"selected":false},{"x1":1,"y1":132,"x2":39,"y2":132,"selected":false},{"x1":1,"y1":148,"x2":39,"y2":148,"selected":false},{"x1":1,"y1":151,"x2":36,"y2":151,"selected":false},{"x1":39,"y1":148,"x2":39,"y2":179,"selected":false},{"x1":36,"y1":151,"x2":36,"y2":176,"selected":false},{"x1":1,"y1":176,"x2":36,"y2":176,"selected":false},{"x1":4,"y1":179,"x2":39,"y2":179,"selected":false},{"x1":4,"y1":179,"x2":4,"y2":220,"selected":false},{"x1":4,"y1":220,"x2":19,"y2":220,"selected":false},{"x1":19,"y1":220,"x2":19,"y2":227,"selected":false},{"x1":4,"y1":227,"x2":19,"y2":227,"selected":false},{"x1":4,"y1":227,"x2":4,"y2":268,"selected":false},{"x1":1,"y1":176,"x2":1,"y2":271,"selected":false},{"x1":4,"y1":268,"x2":112,"y2":268,"selected":false},{"x1":1,"y1":271,"x2":112,"y2":271,"selected":false},{"x1":223,"y1":25,"x2":112,"y2":25,"selected":false},{"x1":220,"y1":28,"x2":116,"y2":28,"selected":false},{"x1":116,"y1":28,"x2":116,"y2":54,"selected":false},{"x1":116,"y1":54,"x2":112,"y2":54,"selected":false},{"x1":223,"y1":25,"x2":223,"y2":104,"selected":false},{"x1":220,"y1":28,"x2":220,"y2":101,"selected":false},{"x1":220,"y1":101,"x2":185,"y2":101,"selected":false},{"x1":223,"y1":104,"x2":188,"y2":104,"selected":false},{"x1":185,"y1":101,"x2":185,"y2":132,"selected":false},{"x1":188,"y1":104,"x2":188,"y2":129,"selected":false},{"x1":223,"y1":129,"x2":188,"y2":129,"selected":false},{"x1":223,"y1":132,"x2":185,"y2":132,"selected":false},{"x1":223,"y1":148,"x2":185,"y2":148,"selected":false},{"x1":223,"y1":151,"x2":188,"y2":151,"selected":false},{"x1":185,"y1":148,"x2":185,"y2":179,"selected":false},{"x1":188,"y1":151,"x2":188,"y2":176,"selected":false},{"x1":223,"y1":176,"x2":188,"y2":176,"selected":false},{"x1":220,"y1":179,"x2":185,"y2":179,"selected":false},{"x1":220,"y1":179,"x2":220,"y2":220,"selected":false},{"x1":220,"y1":220,"x2":205,"y2":220,"selected":false},{"x1":205,"y1":220,"x2":205,"y2":227,"selected":false},{"x1":220,"y1":227,"x2":205,"y2":227,"selected":false},{"x1":220,"y1":227,"x2":220,"y2":268,"selected":false},{"x1":223,"y1":176,"x2":223,"y2":271,"selected":false},{"x1":220,"y1":268,"x2":112,"y2":268,"selected":false},{"x1":223,"y1":271,"x2":112,"y2":271,"selected":false}],
       num_pills = pills.length,
       selected_line = -1;
 
@@ -51,7 +46,7 @@ function init() {
   }
 
   function moveLine(dp, line_index) {
-    if (selected_line < 0) return false;
+    if (line_index < 0) return false;
     var line = lines[line_index];
     line.x1 += dp.x1;
     line.x2 += dp.x2;
@@ -60,6 +55,42 @@ function init() {
     updateLines();
     console.log("moved line to " + JSON.stringify(line))
     return true;
+  }
+
+  function bindMouseMoveEvent() {
+    var w = d3.select("svg")
+      .on("click", function(){
+        unselect_selected_line();
+
+        var index = -1;
+        // add 1 extra pixel around mouse to make it easier to select the line
+        var rect = {x1: d3.event.offsetX - 1, y1: d3.event.offsetY - 1,
+          x2: d3.event.offsetX + 1, y2: d3.event.offsetY + 1};
+        var line = lines.find(function(line) {
+          index++;
+          return collision_line_rect(line, rect);
+        });
+
+        if (line) {
+          select_line(index);
+        }
+      });
+  }
+
+  function unselect_selected_line() {
+    if (selected_line < 0) return;
+    lines[selected_line].selected = false;
+    selected_line = -1;
+    updateLines();
+  }
+
+  function select_line(index) {
+    if (selected_line > -1) lines[selected_line].selected = false;
+    selected_line = index;
+    var line = lines[selected_line];
+    line.selected = true;
+    console.log("selected line: " + JSON.stringify(line));
+    updateLines();
   }
 
   function bindKeyDownEvent() {
@@ -76,34 +107,22 @@ function init() {
             eatPills();
             return;
           case 78: // n = select Next line
-            if (selected_line > -1) lines[selected_line].selected = false;
-            selected_line = (selected_line + 1) % lines.length;
-            var line = lines[selected_line];
-            console.log("selected line: " + JSON.stringify(line));
-            line.selected = true;
-            updateLines();
+            select_line((selected_line + 1) % lines.length);
             return;
           case 80: // p = select Previous line
-            if (selected_line > -1) lines[selected_line].selected = false;
-            selected_line = selected_line <= 0 ? lines.length - 1 : selected_line - 1;
-            var line = lines[selected_line];
-            console.log("selected line: " + JSON.stringify(line));
-            line.selected = true;
-            updateLines();
+            select_line(selected_line <= 0 ? lines.length - 1 : selected_line - 1);
             return;
           case 68: // d = Delete selected line
             if (selected_line < 0) return;
+            console.log(lines.length);
             var deleted = lines.splice(selected_line, 1);
-            drawLines();
-            updateLines();
+            console.log(lines.length);
             selected_line = -1;
+            drawLines();
             console.log("deleted selected line: " + JSON.stringify(deleted));
             return;
           case 85: // u = Unselect selected line
-            if (selected_line < 0) return;
-            lines[selected_line].selected = false;
-            selected_line = -1;
-            updateLines();
+            unselect_selected_line();
             return;
           case 71: // g = Grow selected line
             if (selected_line < 0) return;
@@ -137,14 +156,16 @@ function init() {
             console.log("rotated line: " + JSON.stringify(line));
             return;
           case 65: // a = Add a new line to the board
-            lines.push({"x1":68,"y1":125,"x2":150,"y2":125,"selected":true});
+            lines.push({"x1":88,"y1":144,"x2":130,"y2":144,"selected":true});
             if (selected_line > -1) lines[selected_line].selected = false;
             selected_line = lines.length - 1;
             drawLines();
-            updateLines();
             return;
           case 76: // l = log all Lines to the console
-            console.log(JSON.stringify(lines));
+            var toLog = lines.map(function(line){
+              return {x1: line.x1, y1: line.y1, x2: line.x2, y2: line.y2};
+            });
+            console.log(JSON.stringify(toLog));
             return;
           case LEFT:
             move = true;
@@ -215,19 +236,22 @@ function init() {
 
   function drawLines()
   {
-    var borders = svg.selectAll("line")
-      .data(lines)
-      .enter()
-      .append("line");
+    // call this function when data is added or removed
 
-    updateLines(borders);
+    var borders = svg.selectAll("line")
+      .data(lines);
+
+    borders.exit().remove();
+    borders.enter().append("line");
+
+    updateLines();
   }
 
-  function updateLines(lines)
+  function updateLines()
   {
-    var toUpdate = lines ? lines : svg.selectAll("line");
+    // call this function when the existing data changes
 
-    var lineAttribs = toUpdate
+    var lineAttribs = svg.selectAll("line")
       .attr("x1", function (d) { return d.x1; })
       .attr("y1", function (d) { return d.y1; })
       .attr("x2", function (d) { return d.x2; })
@@ -289,21 +313,6 @@ function init() {
     drawPacmanMouth();
   }
 
-  function crossedBoundary(newx, newy) {
-    var radius = pacman.radius + pacman.margin;
-    var crossedLine = lines.some(function(line){
-      //return collision_line_circle(line, {x: newx, y: newy, radius: pacman.radius + pacman.margin});
-      return collision_line_rect(line, {
-        x1: newx - radius,
-        x2: newx + radius,
-        y1: newy - radius,
-        y2: newy + radius
-      });
-    });
-
-    return crossedLine;
-  }
-
   function getNewCoords(direction) {
     var newx = pacman.x, newy = pacman.y;
     switch (direction) {
@@ -334,13 +343,14 @@ function init() {
     var coords = getNewCoords(pacman.desiredDirection);
     var angle = pacman.desiredRotateAngle;
     var direction = pacman.desiredDirection;
+    var radius = pacman.radius + pacman.margin;
 
-    if (crossedBoundary(coords.x, coords.y)){
+    if (collision_lines_circle(lines, {radius: radius, x: coords.x, y: coords.y})){
       coords = getNewCoords(pacman.direction);
       angle = pacman.rotateAngle;
       direction = pacman.direction;
 
-      if (crossedBoundary(coords.x, coords.y)){
+      if (collision_lines_circle(lines, {radius: radius, x: coords.x, y: coords.y})){
 
         stopMoving();
         pacman.rotateAngle = pacman.desiredRotateAngle;
@@ -378,6 +388,7 @@ function init() {
   positionPacman();
   startMoving();
   bindKeyDownEvent();
+  bindMouseMoveEvent();
 }
 
 ready(init);

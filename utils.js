@@ -55,6 +55,51 @@ function collision_line_rect (line, rect)
     return collision;
 }
 
+function collision_lines_circle(lines, circle) {
+  var rect = {
+    x1: circle.x - circle.radius,
+    x2: circle.x + circle.radius,
+    y1: circle.y - circle.radius,
+    y2: circle.y + circle.radius
+  };
+
+  var collision = lines.some(function(line){
+    return collision_line_rect(line, rect);
+  });
+
+  return collision;
+}
+
+function collision_lines_circle_first(lines, circle) {
+  var rect = {
+    x1: circle.x - circle.radius,
+    x2: circle.x + circle.radius,
+    y1: circle.y - circle.radius,
+    y2: circle.y + circle.radius
+  };
+
+  var line = null, index = -1;
+
+  for (var i = 0; i < lines.length; i++) {
+    if (collision_line_rect(lines[i], rect)) {
+        line = lines[i];
+        index = i;
+        return {line: line, index: index};
+    }
+  }
+
+  return null;
+}
+
+function collision_point_line (point, line)
+{
+  var minx = Math.min(line.x1, line.x2);
+  var miny = Math.min(line.y1, line.y2);
+  var maxx = Math.max(line.x1, line.x2);
+  var maxy = Math.max(line.y1, line.y2);
+  return point.x >= minx && point.x <= maxx && point.y >= miny && point.y <= maxy;
+}
+
 function collision_point_rect (point, rect)
 {
   return point.x >= rect.x1 && point.x <= rect.x2 &&
