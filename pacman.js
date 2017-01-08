@@ -234,7 +234,7 @@ function init() {
     }
   }
 
-  function drawLines()
+  function drawLines(transition)
   {
     // call this function when data is added or removed
 
@@ -244,14 +244,14 @@ function init() {
     borders.exit().remove();
     borders.enter().append("line");
 
-    updateLines();
+    updateLines(transition);
   }
 
-  function updateLines()
+  function updateLines(transition)
   {
     // call this function when the existing data changes
 
-    var lineAttribs = svg.selectAll("line")
+    var lineAttribs = (transition ? svg.selectAll("line").transition().duration(transition) : svg.selectAll("line"))
       .attr("x1", function (d) { return d.x1; })
       .attr("y1", function (d) { return d.y1; })
       .attr("x2", function (d) { return d.x2; })
@@ -382,13 +382,61 @@ function init() {
   }
 
   initSvg();
-  drawPills();
-  drawLines();
-  drawPacman();
-  positionPacman();
-  startMoving();
-  bindKeyDownEvent();
-  bindMouseMoveEvent();
+
+  // random integer between 0 and 1 (inclusive)
+  var transformType = Math.random() * 2 | 0;
+  var offset = 10;
+  console.log("transformType " + transformType);
+
+  lines.forEach(function(line){
+    line.ox1 = line.x1;
+    line.oy1 = line.y1;
+    line.ox2 = line.x2;
+    line.oy2 = line.y2;
+
+    // random integer between 0 and 1 (inclusive)
+    var axis = Math.random() * 2 | 0;
+
+    switch (transformType) {
+      case 0:
+        line.x1 = d3.randomUniform(line.x1 - offset, line.x1 + offset)();
+        line.y1 = d3.randomUniform(line.y1 - offset, line.y1 + offset)();
+        line.x2 = d3.randomUniform(line.x2 - offset, line.x2 + offset)();
+        line.y2 = d3.randomUniform(line.y2 - offset, line.y2 + offset)();
+        break;
+      case 1:
+        var direction = d3.randomUniform(-1, 1)();
+        if (axis === 0) {
+          line.x1 = line.x1 + screen.width * direction;
+          line.x2 = line.x2 + screen.width * direction;
+        } else {
+          line.y1 = line.y1 + screen.width * direction;
+          line.y2 = line.y2 + screen.width * direction;
+        }
+    }
+  });
+
+  drawLines(0);
+
+  lines.forEach(function(line){
+    line.x1 = line.ox1;
+    line.y1 = line.oy1;
+    line.x2 = line.ox2;
+    line.y2 = line.oy2;
+  });
+
+  var transitionDuration = 2000;
+  drawLines(transitionDuration);
+
+  d3.timeout(function() {
+    drawPills();
+    drawPacman();
+    positionPacman();
+    startMoving();
+    bindKeyDownEvent();
+    bindMouseMoveEvent();
+  }, transitionDuration * .9);
+
 }
 
 ready(init);
