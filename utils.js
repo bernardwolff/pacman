@@ -25,8 +25,7 @@
   return (t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1)
 }*/
 
-function collision_line_rect (line, rect)
-{
+function collision_line_rect (line, rect) {
   var rect_min = {x: Math.min(rect.x1, rect.x2), y: Math.min(rect.y1, rect.y2)};
   var rect_max = {x: Math.max(rect.x1, rect.x2), y: Math.max(rect.y1, rect.y2)};
   var sorted_rect = {x1: rect_min.x, y1: rect_min.y, x2: rect_max.x, y2: rect_max.y};
@@ -91,8 +90,7 @@ function collision_lines_circle_first(lines, circle) {
   return null;
 }
 
-function collision_point_line (point, line)
-{
+function collision_point_line (point, line) {
   var minx = Math.min(line.x1, line.x2);
   var miny = Math.min(line.y1, line.y2);
   var maxx = Math.max(line.x1, line.x2);
@@ -100,20 +98,17 @@ function collision_point_line (point, line)
   return point.x >= minx && point.x <= maxx && point.y >= miny && point.y <= maxy;
 }
 
-function collision_point_rect (point, rect)
-{
+function collision_point_rect (point, rect) {
   return point.x >= rect.x1 && point.x <= rect.x2 &&
     point.y >= rect.y1 && point.y <= rect.y2;
 }
 
-function rotate_point (point, angle)
-{
+function rotate_point (point, angle) {
   return {x: point.x * Math.cos(angle) - point.y * Math.sin(angle), y: point.y * Math.cos(angle) + point.x * Math.sin(angle)};
 }
 
-function rotate_line (line, angle)
+function rotate_line (line, angle) {
 // rotate a line about its center
-{
   var center = {x: (line.x1 + line.x2) / 2, y: (line.y1 + line.y2) / 2};
   var normalized = {x1: line.x1 - center.x, y1: line.y1 - center.y, x2: line.x2 - center.x, y2: line.y2 - center.y};
   var angle = Math.PI / 2;
