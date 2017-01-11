@@ -24,7 +24,6 @@ var screen = {width: 224, height: 288, bgColor: "black", mouthOpen: true},
           + "rotate(" + this.rotateAngle + ")"
       }
     },
-    pills = [{"x":12,"y":36},{"x":20,"y":36},{"x":28,"y":36},{"x":36,"y":36},{"x":44,"y":36},{"x":52,"y":36},{"x":60,"y":36},{"x":68,"y":36},{"x":76,"y":36},{"x":84,"y":36},{"x":92,"y":36},{"x":100,"y":36},{"x":124,"y":36},{"x":132,"y":36},{"x":140,"y":36},{"x":148,"y":36},{"x":156,"y":36},{"x":164,"y":36},{"x":172,"y":36},{"x":180,"y":36},{"x":188,"y":36},{"x":196,"y":36},{"x":204,"y":36},{"x":212,"y":36},{"x":12,"y":44},{"x":52,"y":44},{"x":100,"y":44},{"x":124,"y":44},{"x":172,"y":44},{"x":212,"y":44},{"x":12,"y":52},{"x":52,"y":52},{"x":100,"y":52},{"x":124,"y":52},{"x":172,"y":52},{"x":212,"y":52},{"x":12,"y":60},{"x":52,"y":60},{"x":100,"y":60},{"x":124,"y":60},{"x":172,"y":60},{"x":212,"y":60},{"x":12,"y":68},{"x":20,"y":68},{"x":28,"y":68},{"x":36,"y":68},{"x":44,"y":68},{"x":52,"y":68},{"x":60,"y":68},{"x":68,"y":68},{"x":76,"y":68},{"x":84,"y":68},{"x":92,"y":68},{"x":100,"y":68},{"x":108,"y":68},{"x":116,"y":68},{"x":124,"y":68},{"x":132,"y":68},{"x":140,"y":68},{"x":148,"y":68},{"x":156,"y":68},{"x":164,"y":68},{"x":172,"y":68},{"x":180,"y":68},{"x":188,"y":68},{"x":196,"y":68},{"x":204,"y":68},{"x":212,"y":68},{"x":12,"y":76},{"x":52,"y":76},{"x":76,"y":76},{"x":148,"y":76},{"x":172,"y":76},{"x":212,"y":76},{"x":12,"y":84},{"x":52,"y":84},{"x":76,"y":84},{"x":148,"y":84},{"x":172,"y":84},{"x":212,"y":84},{"x":12,"y":92},{"x":20,"y":92},{"x":28,"y":92},{"x":36,"y":92},{"x":44,"y":92},{"x":52,"y":92},{"x":76,"y":92},{"x":84,"y":92},{"x":92,"y":92},{"x":100,"y":92},{"x":124,"y":92},{"x":132,"y":92},{"x":140,"y":92},{"x":148,"y":92},{"x":172,"y":92},{"x":180,"y":92},{"x":188,"y":92},{"x":196,"y":92},{"x":204,"y":92},{"x":212,"y":92},{"x":52,"y":100},{"x":172,"y":100},{"x":52,"y":108},{"x":172,"y":108},{"x":52,"y":116},{"x":172,"y":116},{"x":52,"y":124},{"x":172,"y":124},{"x":52,"y":132},{"x":172,"y":132},{"x":52,"y":140},{"x":172,"y":140},{"x":52,"y":148},{"x":172,"y":148},{"x":52,"y":156},{"x":172,"y":156},{"x":52,"y":164},{"x":172,"y":164},{"x":52,"y":172},{"x":172,"y":172},{"x":52,"y":180},{"x":172,"y":180},{"x":12,"y":188},{"x":20,"y":188},{"x":28,"y":188},{"x":36,"y":188},{"x":44,"y":188},{"x":52,"y":188},{"x":60,"y":188},{"x":68,"y":188},{"x":76,"y":188},{"x":84,"y":188},{"x":92,"y":188},{"x":100,"y":188},{"x":124,"y":188},{"x":132,"y":188},{"x":140,"y":188},{"x":148,"y":188},{"x":156,"y":188},{"x":164,"y":188},{"x":172,"y":188},{"x":180,"y":188},{"x":188,"y":188},{"x":196,"y":188},{"x":204,"y":188},{"x":212,"y":188},{"x":12,"y":196},{"x":52,"y":196},{"x":100,"y":196},{"x":124,"y":196},{"x":172,"y":196},{"x":212,"y":196},{"x":12,"y":204},{"x":52,"y":204},{"x":100,"y":204},{"x":124,"y":204},{"x":172,"y":204},{"x":212,"y":204},{"x":12,"y":212},{"x":20,"y":212},{"x":28,"y":212},{"x":116,"y":212},{"x":124,"y":212},{"x":132,"y":212},{"x":140,"y":212},{"x":148,"y":212},{"x":156,"y":212},{"x":164,"y":212},{"x":172,"y":212},{"x":196,"y":212},{"x":204,"y":212},{"x":212,"y":212},{"x":28,"y":220},{"x":52,"y":220},{"x":76,"y":220},{"x":148,"y":220},{"x":172,"y":220},{"x":196,"y":220},{"x":28,"y":228},{"x":52,"y":228},{"x":76,"y":228},{"x":148,"y":228},{"x":172,"y":228},{"x":196,"y":228},{"x":12,"y":236},{"x":20,"y":236},{"x":28,"y":236},{"x":36,"y":236},{"x":44,"y":236},{"x":52,"y":236},{"x":76,"y":236},{"x":84,"y":236},{"x":92,"y":236},{"x":100,"y":236},{"x":124,"y":236},{"x":132,"y":236},{"x":140,"y":236},{"x":148,"y":236},{"x":172,"y":236},{"x":180,"y":236},{"x":188,"y":236},{"x":196,"y":236},{"x":204,"y":236},{"x":212,"y":236},{"x":12,"y":244},{"x":100,"y":244},{"x":124,"y":244},{"x":212,"y":244},{"x":12,"y":252},{"x":100,"y":252},{"x":124,"y":252},{"x":212,"y":252},{"x":12,"y":260},{"x":20,"y":260},{"x":28,"y":260},{"x":36,"y":260},{"x":44,"y":260},{"x":52,"y":260},{"x":60,"y":260},{"x":68,"y":260},{"x":76,"y":260},{"x":84,"y":260},{"x":92,"y":260},{"x":100,"y":260},{"x":108,"y":260},{"x":116,"y":260},{"x":124,"y":260},{"x":132,"y":260},{"x":140,"y":260},{"x":148,"y":260},{"x":156,"y":260},{"x":164,"y":260},{"x":172,"y":260},{"x":180,"y":260},{"x":188,"y":260},{"x":196,"y":260},{"x":204,"y":260},{"x":212,"y":260},{"x":100,"y":212},{"x":108,"y":212},{"x":92,"y":212},{"x":84,"y":212},{"x":76,"y":212},{"x":68,"y":212},{"x":60,"y":212},{"x":52,"y":212}],
     num_pills = pills.length,
     selected_line = -1,
     selected_pill = -1,
@@ -40,11 +39,19 @@ num_pills = pills.length*/
 var svg, arc, g, path;
 
 function initSvg() {
+  var w = window,
+    d = document,
+    e = d.documentElement,
+    g = d.getElementsByTagName('body')[0],
+    x = w.innerWidth || e.clientWidth || g.clientWidth,
+    y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+  var scaleAmount = x < y ? Math.floor(x / screen.width) : Math.floor(y / screen.height);
   svg = d3.select("body")
     .append("svg")
     .attr("width", screen.width)
     .attr("height", screen.height)
-    .style("background-color", screen.bgColor);
+    .style("background-color", screen.bgColor)
+    .style("transform", "scale(" + scaleAmount + ")");
 }
 
 function tryClick(objects, collision_func, select_func, buffer) {
@@ -76,12 +83,36 @@ function bindMouseClickEvent() {
     });
 }
 
-function bindKeyDownEvent() {
-  d3.select("body")
-    .on("keydown", function() {
-      console.log("key pressed " + d3.event.keyCode);
+var lastTouch = null;
+function bindTouchEvent() {
+  d3.select("svg").on("touchmove", function() {
+    d3.event.preventDefault();
+    d3.event.stopPropagation();
+    var d = d3.touches(this);
+    if (lastTouch === null) {
+      lastTouch = d;
+      console.log("returning");
+      return;
+    }
+    var dx = d[0][0] - lastTouch[0][0];
+    var dy = d[0][1] - lastTouch[0][1];
+    lastTouch = d;
+    var key = null;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0) key = RIGHT;
+      else key = LEFT;
+    } else {
+      if (dy > 0) key = DOWN;
+      else key = UP;
+    }
+    handleKeyDownEvent(key);
+  });
+}
+
+function handleKeyDownEvent(keyCode) {
+      console.log("key pressed " + keyCode);
       var move = false;
-      switch (d3.event.keyCode){
+      switch (keyCode){
         case SPACE:
           stopMoving();
           return;
@@ -197,12 +228,18 @@ function bindKeyDownEvent() {
 
       if (!move) return;
 
-      var desiredRotateAngle = keys[d3.event.keyCode];
+      var desiredRotateAngle = keys[keyCode];
       if (desiredRotateAngle === undefined) return;
       pacman.desiredRotateAngle = desiredRotateAngle;
-      pacman.desiredDirection = d3.event.keyCode;
+      pacman.desiredDirection = keyCode;
       positionPacman();
       startMoving();
+}
+
+function bindKeyDownEvent() {
+  d3.select("body")
+    .on("keydown", function() {
+      handleKeyDownEvent(d3.event.keyCode);
     });
 }
 
@@ -521,5 +558,6 @@ ready(function() {
     startMoving();
     bindKeyDownEvent();
     bindMouseClickEvent();
+    bindTouchEvent();
   }, transitionDuration * .9);
 });
