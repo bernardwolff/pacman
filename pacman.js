@@ -83,7 +83,7 @@ function bindMouseClickEvent() {
     });
 }
 
-var lastTouch = null;
+var lastTouch = null, MIN_TOUCH_AMT = 5;
 function bindTouchEvent() {
   d3.select("svg").on("touchmove", function() {
     d3.event.preventDefault();
@@ -97,14 +97,14 @@ function bindTouchEvent() {
     var dy = d[0][1] - lastTouch[0][1];
     lastTouch = d;
     var key = null;
-    if (Math.abs(dx) > Math.abs(dy)) {
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > MIN_TOUCH_AMT) {
       if (dx > 0) key = RIGHT;
       else key = LEFT;
-    } else {
+    } else if (Math.abs(dy) > MIN_TOUCH_AMT) {
       if (dy > 0) key = DOWN;
       else key = UP;
     }
-    handleKeyDownEvent(key);
+		if (key) handleKeyDownEvent(key);
   });
 }
 
