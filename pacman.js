@@ -91,7 +91,6 @@ function bindTouchEvent() {
     var d = d3.touches(this);
     if (lastTouch === null) {
       lastTouch = d;
-      console.log("returning");
       return;
     }
     var dx = d[0][0] - lastTouch[0][0];
