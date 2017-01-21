@@ -131,7 +131,7 @@ function handleKeyDownEvent(keyCode) {
           if (selected_line > -1) {
             var deleted = lines.splice(selected_line, 1);
             selected_line = -1;
-            drawLines();
+            drawLines(lines);
             console.log("deleted selected line: " + JSON.stringify(deleted));
           } else if (selected_pill > -1) {
             var deleted = pills.splice(selected_pill, 1);
@@ -168,31 +168,20 @@ function handleKeyDownEvent(keyCode) {
           if (selected_line < 0) return;
           var line = lines[selected_line];
           var rotated = rotate_line(line, Math.PI);
-          line.x1 = rotated.x1;
-          line.y1 = rotated.y1;
-          line.x2 = rotated.x2;
-          line.y2 = rotated.y2;
+          Object.assign(line, rotated);
           updateLines();
           console.log("rotated line: " + JSON.stringify(line));
           return;
         case 65: // a = Add a new line to the board
           lines.push({"x1":88,"y1":144,"x2":130,"y2":144,"selected":true});
-          if (selected_pill > -1) {
-            pills[selected_pill].selected = false;
-            selected_pill = -1;
-            drawPills();
-          }
+          unselect_selected_pill();
           if (selected_line > -1) lines[selected_line].selected = false;
           selected_line = lines.length - 1;
-          drawLines();
+          drawLines(lines);
           return;
         case 73: // i = add a new pIll to the board
           pills.push({"x":88, "y":144, "selected":true});
-          if (selected_line > -1) {
-            lines[selected_line].selected = false;
-            selected_line = -1;
-            drawLines();
-          }
+          unselect_selected_line();
           if (selected_pill > -1) pills[selected_pill].selected = false;
           selected_pill = pills.length - 1;
           drawPills();
@@ -328,7 +317,7 @@ function tryClickPill() {
   return tryClick(pills, collision_point_rect, select_pill, 2);
 }
 
-function drawLines(transition) {
+function drawLines(lines, transitionDuration) {
   // call this function when data is added or removed
 
   var borders = svg.selectAll("line")
@@ -337,13 +326,13 @@ function drawLines(transition) {
   borders.exit().remove();
   borders.enter().append("line");
 
-  updateLines(transition);
+  updateLines(transitionDuration);
 }
 
-function updateLines(transition) {
+function updateLines(transitionDuration) {
   // call this function when the existing data changes
 
-  var lineAttribs = (transition ? svg.selectAll("line").transition().duration(transition) : svg.selectAll("line"))
+  var lineAttribs = (transitionDuration ? svg.selectAll("line").transition().duration(transitionDuration) : svg.selectAll("line"))
     .attr("x1", function (d) { return d.x1; })
     .attr("y1", function (d) { return d.y1; })
     .attr("x2", function (d) { return d.x2; })
@@ -373,26 +362,28 @@ function tryClickLine() {
 }
 
 function moveLineRandomly(line, transformType) {
+  var randomLine = Object.assign({}, line);
   switch (transformType) {
     case 0:
       var offset = 10;
-      line.x1 = d3.randomUniform(line.x1 - offset, line.x1 + offset)();
-      line.y1 = d3.randomUniform(line.y1 - offset, line.y1 + offset)();
-      line.x2 = d3.randomUniform(line.x2 - offset, line.x2 + offset)();
-      line.y2 = d3.randomUniform(line.y2 - offset, line.y2 + offset)();
+      randomLine.x1 = d3.randomUniform(line.x1 - offset, line.x1 + offset)();
+      randomLine.y1 = d3.randomUniform(line.y1 - offset, line.y1 + offset)();
+      randomLine.x2 = d3.randomUniform(line.x2 - offset, line.x2 + offset)();
+      randomLine.y2 = d3.randomUniform(line.y2 - offset, line.y2 + offset)();
       break;
     case 1:
       var direction = d3.randomUniform(-1, 1)();
       // random integer between 0 and 1 (inclusive)
       var axis = Math.random() * 2 | 0;
       if (axis === 0) {
-        line.x1 = line.x1 + screen.width * direction;
-        line.x2 = line.x2 + screen.width * direction;
+        randomLine.x1 = line.x1 + screen.width * direction;
+        randomLine.x2 = line.x2 + screen.width * direction;
       } else {
-        line.y1 = line.y1 + screen.width * direction;
-        line.y2 = line.y2 + screen.width * direction;
+        randomLine.y1 = line.y1 + screen.width * direction;
+        randomLine.y2 = line.y2 + screen.width * direction;
       }
   }
+  return randomLine;
 }
 
 function initLines() {
@@ -400,32 +391,13 @@ function initLines() {
   var transformType = Math.random() * 2 | 0;
   console.log("transformType " + transformType);
 
-  lines.forEach(function(line){
-    // save original coordinates
-    line.ox1 = line.x1;
-    line.oy1 = line.y1;
-    line.ox2 = line.x2;
-    line.oy2 = line.y2;
-
-    moveLineRandomly(line, transformType);
+  var randomLines = lines.map(function(line){
+    return moveLineRandomly(line, transformType);
   });
 
-  drawLines(0);
+  drawLines(randomLines);
 
-  lines.forEach(function(line){
-    // set coordinates back to originals
-    line.x1 = line.ox1;
-    line.y1 = line.oy1;
-    line.x2 = line.ox2;
-    line.y2 = line.oy2;
-
-    delete line.ox1;
-    delete line.oy1;
-    delete line.ox2;
-    delete line.oy2;
-  });
-
-  drawLines(transitionDuration);
+  drawLines(lines, transitionDuration);
 }
 
 function moveLine(dp, line_index) {
